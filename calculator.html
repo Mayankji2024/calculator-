@@ -3,98 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mayank Sharma - NEET Aspirant</title>
+    <title>Simple Calculator</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
             margin: 0;
-            padding: 0;
-            background: #f4f4f9;
-            color: #333;
         }
 
-        .header {
+        .calculator {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .display {
+            background: #222;
+            color: #fff;
+            font-size: 2em;
+            text-align: right;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .button {
             background: #007bff;
             color: #fff;
-            padding: 1em 0;
-            text-align: center;
+            border: none;
+            padding: 20px;
+            font-size: 1.5em;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        .header h1 {
-            margin: 0;
+        .button:hover {
+            background: #0056b3;
         }
 
-        .content {
-            padding: 2em;
+        .button:active {
+            background: #004494;
         }
 
-        .content h2 {
-            color: #007bff;
+        .button.zero {
+            grid-column: span 2;
         }
 
-        .profile-picture {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 1em;
+        .button.equal {
+            background: #28a745;
         }
 
-        .bio {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 2em;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
+        .button.equal:hover {
+            background: #218838;
         }
 
-        .bio p {
-            line-height: 1.6;
+        .button.equal:active {
+            background: #1e7e34;
         }
 
-        .footer {
-            background: #333;
-            color: #fff;
-            text-align: center;
-            padding: 1em 0;
-            position: absolute;
-            bottom: 0;
-            width: 100%;
+        .button.clear {
+            background: #dc3545;
         }
 
-        @media (min-width: 600px) {
-            .bio {
-                display: flex;
-                align-items: center;
-                text-align: left;
-            }
+        .button.clear:hover {
+            background: #c82333;
+        }
 
-            .profile-picture {
-                margin-right: 2em;
-            }
+        .button.clear:active {
+            background: #bd2130;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Mayank Sharma</h1>
-        <p>NEET Aspirant | Future AIIMS Student</p>
-    </header>
-
-    <section class="content">
-        <div class="bio">
-            <img src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-picture">
-            <div>
-                <h2>About Me</h2>
-                <p>Hello! I'm Mayank Sharma, a dedicated and ambitious NEET aspirant with a profound interest in biology. My goal is to secure a place at AIIMS college next year. I spend countless hours studying and mastering various biological concepts, driven by a passion for understanding the intricacies of life and medical sciences. With my unwavering determination and hard work, I am committed to achieving excellence and making significant contributions to the field of medicine.</p>
-            </div>
+    <div class="calculator">
+        <div id="display" class="display">0</div>
+        <div class="buttons">
+            <button class="button" onclick="appendNumber('7')">7</button>
+            <button class="button" onclick="appendNumber('8')">8</button>
+            <button class="button" onclick="appendNumber('9')">9</button>
+            <button class="button" onclick="chooseOperation('/')">÷</button>
+            <button class="button" onclick="appendNumber('4')">4</button>
+            <button class="button" onclick="appendNumber('5')">5</button>
+            <button class="button" onclick="appendNumber('6')">6</button>
+            <button class="button" onclick="chooseOperation('*')">×</button>
+            <button class="button" onclick="appendNumber('1')">1</button>
+            <button class="button" onclick="appendNumber('2')">2</button>
+            <button class="button" onclick="appendNumber('3')">3</button>
+            <button class="button" onclick="chooseOperation('-')">−</button>
+            <button class="button zero" onclick="appendNumber('0')">0</button>
+            <button class="button" onclick="appendNumber('.')">.</button>
+            <button class="button" onclick="chooseOperation('+')">+</button>
+            <button class="button equal" onclick="compute()">=</button>
+            <button class="button clear" onclick="clearDisplay()">C</button>
         </div>
-    </section>
+    </div>
 
-    <footer class="footer">
-        <p>&copy; 2024 Mayank Sharma</p>
-    </footer>
+    <script>
+        let displayElement = document.getElementById('display');
+        let currentOperand = '';
+        let previousOperand = '';
+        let operation = null;
+
+        function clearDisplay() {
+            currentOperand = '';
+            previousOperand = '';
+            operation = null;
+            displayElement.innerText = '0';
+        }
+
+        function appendNumber(number) {
+            if (number === '.' && currentOperand.includes('.')) return;
+            currentOperand = currentOperand.toString() + number.toString();
+            displayElement.innerText = currentOperand;
+        }
+
+        function chooseOperation(op) {
+            if (currentOperand === '') return;
+            if (previousOperand !== '') {
+                compute();
+            }
+            operation = op;
+            previousOperand = currentOperand;
+            currentOperand = '';
+        }
+
+        function compute() {
+            let computation;
+            const prev = parseFloat(previousOperand);
+            const current = parseFloat(currentOperand);
+            if (isNaN(prev) || isNaN(current)) return;
+            switch (operation) {
+                case '+':
+                    computation = prev + current;
+                    break;
+                case '-':
+                    computation = prev - current;
+                    break;
+                case '*':
+                    computation = prev * current;
+                    break;
+                case '/':
+                    computation = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            currentOperand = computation;
+            operation = null;
+            previousOperand = '';
+            displayElement.innerText = currentOperand;
+        }
+    </script>
 </body>
 </html>
